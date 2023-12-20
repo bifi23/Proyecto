@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/Grafica/Grafica.iml" filepath="$PROJECT_DIR$/Grafica/Grafica.iml" />
       <module fileurl="file://$PROJECT_DIR$/Logica/Logica.iml" filepath="$PROJECT_DIR$/Logica/Logica.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/project.iml" filepath="$PROJECT_DIR$/.idea/project.iml" />
     </modules>
