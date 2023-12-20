@@ -134,18 +134,7 @@ public class PizarraUML extends JPanel {
         clasesPanel.add(anadirClaseA);
         add(clasesPanel, BorderLayout.WEST);
 
-        /**Se hace un Jcombobox para seleccionar que conector dibujar, tomando de base
-         * las caracteristicas de las flechas definidas en la logica
-         */
-        tipoFlechaComboBox = new JComboBox<>(Flecha.values());
-        tipoFlechaComboBox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Flecha selectedFlecha = (Flecha) tipoFlechaComboBox.getSelectedItem();
-                // logica flechas
-            }
-        });
-        clasesPanel.add(tipoFlechaComboBox);
+
         add(clasesPanel, BorderLayout.WEST);
 
     }
