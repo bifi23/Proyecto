@@ -1,2 +1,3 @@
 # Proyecto
-proyecto programacion 2
+Bianca Fiorella Seminario Solano
+
