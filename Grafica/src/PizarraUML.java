@@ -2,7 +2,6 @@
 
 import javax.swing.*;
 import java.awt.*;
-import Command.*;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -10,21 +9,15 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
-import Decorator.Flecha;
-import Pizarra.Pizarra;
-import clasesdecorator.*;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+
 import java.util.List;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.List;
 
+
+/**
+ * La clase PizarraUML extiende JFrame y representa una aplicación que permite gestionar múltiples pizarras para dibujar UML.
+ */
 public class PizarraUML extends JFrame {
     private JTabbedPane tabbedPane;
     private List<PizarraPanel> pizarras;
@@ -35,62 +28,29 @@ public class PizarraUML extends JFrame {
     private JComboBox<String> modeComboBox;
     private JComboBox<String> arrowComboBox;
 
+    /**
+     * Constructor de la clase PizarraUML.
+     * Configura la interfaz gráfica y los componentes necesarios.
+     */
     public PizarraUML() {
         setTitle("Pizarra Múltiple");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(800, 600);
 
+        // Inicialización de componentes
         tabbedPane = new JTabbedPane();
         pizarras = new ArrayList<>();
-
         agregarTabButton = new JButton("Agregar Pizarra");
-        agregarTabButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                agregarPizarra();
-            }
-        });
-
         cerrarTabButton = new JButton("Cerrar Pizarra");
-        cerrarTabButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                cerrarPizarra();
-            }
-        });
-
         guardarButton = new JButton("Guardar");
-        guardarButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                guardarPizarra();
-            }
-        });
-
         colorComboBox = new JComboBox<>(new String[]{"Negro", "Rojo", "Azul", "Verde"});
-        colorComboBox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                cambiarColor((String) colorComboBox.getSelectedItem());
-            }
-        });
-
         modeComboBox = new JComboBox<>(new String[]{"Linea", "Rectangulo", "Entidad", "Flecha"});
-        modeComboBox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                cambiarModo((String) modeComboBox.getSelectedItem());
-            }
-        });
-
         arrowComboBox = new JComboBox<>(new String[]{"Ninguna", "Triangulo", "Diamante"});
-        arrowComboBox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                cambiarTipoFlecha((String) arrowComboBox.getSelectedItem());
-            }
-        });
 
+        // Configuración de eventos de los botones y ComboBox
+        configurarEventos();
+
+        // Creación del panel de botones
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(agregarTabButton);
         buttonPanel.add(cerrarTabButton);
@@ -99,10 +59,23 @@ public class PizarraUML extends JFrame {
         buttonPanel.add(modeComboBox);
         buttonPanel.add(arrowComboBox);
 
+        // Configuración del diseño del JFrame
+        setLayout(new BorderLayout());
         add(tabbedPane, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
     }
 
+    // Configuración de eventos para los botones y ComboBox
+    private void configurarEventos() {
+        agregarTabButton.addActionListener(e -> agregarPizarra());
+        cerrarTabButton.addActionListener(e -> cerrarPizarra());
+        guardarButton.addActionListener(e -> guardarPizarra());
+        colorComboBox.addActionListener(e -> cambiarColor((String) colorComboBox.getSelectedItem()));
+        modeComboBox.addActionListener(e -> cambiarModo((String) modeComboBox.getSelectedItem()));
+        arrowComboBox.addActionListener(e -> cambiarTipoFlecha((String) arrowComboBox.getSelectedItem()));
+    }
+
+    // Método para agregar una nueva pizarra al tabbedPane
     private void agregarPizarra() {
         PizarraPanel nuevaPizarra = new PizarraPanel();
         pizarras.add(nuevaPizarra);
@@ -110,6 +83,7 @@ public class PizarraUML extends JFrame {
         tabbedPane.setSelectedComponent(nuevaPizarra);
     }
 
+    // Método para cerrar la pizarra seleccionada
     private void cerrarPizarra() {
         int selectedIndex = tabbedPane.getSelectedIndex();
         if (selectedIndex != -1) {
@@ -118,6 +92,7 @@ public class PizarraUML extends JFrame {
         }
     }
 
+    // Método para guardar la pizarra en un archivo
     private void guardarPizarra() {
         JFileChooser fileChooser = new JFileChooser();
         int result = fileChooser.showSaveDialog(this);
@@ -133,6 +108,7 @@ public class PizarraUML extends JFrame {
         }
     }
 
+    // Método para cambiar el color de la figura en la pizarra actual
     private void cambiarColor(String color) {
         Color nuevoColor;
         switch (color) {
@@ -151,14 +127,12 @@ public class PizarraUML extends JFrame {
         }
 
         PizarraPanel pizarraActual = obtenerPizarraActual();
-//        if (pizarraActual != null) {
-//            pizarraActual.setColorLinea(nuevoColor);
-//        }
         assert pizarraActual != null;
         pizarraActual.setColorFigura(nuevoColor);
         pizarraActual.repaint();
     }
 
+    // Método para cambiar el modo de dibujo en la pizarra actual
     private void cambiarModo(String modo) {
         PizarraPanel pizarraActual = obtenerPizarraActual();
         if (pizarraActual != null) {
@@ -179,6 +153,7 @@ public class PizarraUML extends JFrame {
         }
     }
 
+    // Método para cambiar el tipo de flecha en la pizarra actual
     private void cambiarTipoFlecha(String tipoFlecha) {
         PizarraPanel pizarraActual = obtenerPizarraActual();
         if (pizarraActual != null && pizarraActual.getMode() == PizarraPanel.Mode.ARROW) {
@@ -196,6 +171,7 @@ public class PizarraUML extends JFrame {
         }
     }
 
+    // Método para obtener la pizarra actualmente seleccionada
     private PizarraPanel obtenerPizarraActual() {
         int selectedIndex = tabbedPane.getSelectedIndex();
         if (selectedIndex != -1) {
@@ -203,5 +179,4 @@ public class PizarraUML extends JFrame {
         }
         return null;
     }
-    }
-
+}
