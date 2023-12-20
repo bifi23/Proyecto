@@ -2,23 +2,41 @@
 
 import javax.swing.*;
 import java.awt.*;
+import Command.*;
+import java.util.ArrayList;
+
+import Decorator.Flecha;
+import Pizarra.Pizarra;
+import clasesdecorator.*;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.ArrayList;
+import java.io.Serializable;
+import java.util.List;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
-import java.io.Serializable;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import Decorator.Flecha;
-import Pizarra.Pizarra;
-
-
-
-
-public class PizarraPanel extends JPanel implements Serializable {
+public class PizarraPanel extends JPanel implements Serializable  {
+    private List<Shape> shapes = new ArrayList<>();
+    private Shape currentShape;
+    private Color colorLinea = Color.BLACK;
+    private Mode currentMode = Mode.LINE;
+    private ArrowType currentArrowType = ArrowType.NONE;
+    private Point startPoint;
+    private ArrowType arrowType = ArrowType.NONE;
+    private Color colorFigura = Color.BLACK;
 
     private Pizarra pizarra;
     private Flecha tipoFlechaSeleccionada;
@@ -31,16 +49,7 @@ public class PizarraPanel extends JPanel implements Serializable {
         this.pizarra = pizarra;
         setPreferredSize(new Dimension(800, 600));
     }
-
-
-    private List<Shape> shapes = new ArrayList<>();
-    private Shape currentShape;
-    private Color colorLinea = Color.BLACK;
-    private Mode currentMode = Mode.LINE;
-    private ArrowType currentArrowType = ArrowType.NONE;
-    private Point startPoint;
-    private ArrowType arrowType = ArrowType.NONE;
-    private Color colorFigura = Color.BLACK;
+    
     public enum Mode {
         LINE,
         RECTANGLE,
