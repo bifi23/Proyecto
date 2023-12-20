@@ -49,7 +49,7 @@ public class PizarraPanel extends JPanel implements Serializable  {
         this.pizarra = pizarra;
         setPreferredSize(new Dimension(800, 600));
     }
-    
+
     public enum Mode {
         LINE,
         RECTANGLE,

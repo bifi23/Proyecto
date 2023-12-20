@@ -1,103 +1,188 @@
-
-
 import javax.swing.*;
 import java.awt.*;
-import Command.*;
-import java.util.ArrayList;
-
-import Decorator.Flecha;
-import Pizarra.Pizarra;
-import clasesdecorator.*;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-public class PizarraUML extends JPanel {
-    private Pizarra pizarraL;
-    private PizarraPanel pizarraPanel;
-    private JComboBox<Flecha> tipoFlechaComboBox;
-    private JLabel nombrePizarraLabel;
-    private boolean primeraVez = true;
-    private int numeroClases;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class PizarraUML extends JFrame {
+    private JTabbedPane tabbedPane;
+    private List<PizarraPanel> pizarras;
+    private JButton agregarTabButton;
+    private JButton cerrarTabButton;
+    private JButton guardarButton;
+    private JComboBox<String> colorComboBox;
+    private JComboBox<String> modeComboBox;
+    private JComboBox<String> arrowComboBox;
 
     public PizarraUML() {
-        pizarraL = new Pizarra(new ArrayList<>(), new ArrayList<>());
-        CommandConfiguracion.CommandConfiguracion(pizarraL);
-        ComponentesInicial();
-    }
+        setTitle("Pizarra Múltiple");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(800, 600);
 
-    private void ComponentesInicial() {
-        setLayout(new BorderLayout());
+        tabbedPane = new JTabbedPane();
+        pizarras = new ArrayList<>();
 
-        pizarraPanel = new PizarraPanel(pizarraL);
-        add(pizarraPanel, BorderLayout.CENTER);
+        agregarTabButton = new JButton("Agregar Pizarra");
+        agregarTabButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                agregarPizarra();
+            }
+        });
 
-        nombrePizarraLabel = new JLabel("Nombre de la Pizarra: " + pizarraL.getNombre());
-        add(nombrePizarraLabel, BorderLayout.NORTH);
+        cerrarTabButton = new JButton("Cerrar Pizarra");
+        cerrarTabButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cerrarPizarra();
+            }
+        });
 
-        JPanel botonesPanel = new JPanel();
-        JPanel clasesPanel = new JPanel();
-        clasesPanel.setLayout(new BoxLayout(clasesPanel, BoxLayout.Y_AXIS));
-
-        JButton guardarButton = new JButton("Guardar Pizarra");
-        JButton cargarButton = new JButton("Cargar Pizarra");
-        JButton botonBorrarTodo = new JButton("Borrar todo");
-
-
-
-        /**
-         * Guarda la pizarra con cierto nombre
-         */
+        guardarButton = new JButton("Guardar");
         guardarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (primeraVez) {
-                    String nuevoNombre = JOptionPane.showInputDialog("Ingrese el nuevo nombre de la pizarra:");
-
-                    if (nuevoNombre != null && !nuevoNombre.isEmpty()) {
-                        pizarraL.setNombre(nuevoNombre);
-                        primeraVez = false;
-                    }
-                }
-                nombrePizarraLabel.setText(pizarraL.getNombre());
-                pizarraL.clickBoton1();
-                pizarraPanel.repaint();
+                guardarPizarra();
             }
         });
-        /**
-         * Utiliza el boton 2 para cargar la pizarra con cierto nombre
-         */
-        cargarButton.addActionListener(new ActionListener() {
+
+        colorComboBox = new JComboBox<>(new String[]{"Negro", "Rojo", "Azul", "Verde"});
+        colorComboBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String nuevoNombre = JOptionPane.showInputDialog("Ingrese el nombre EXACTO de pizarra a cargar:");
-                pizarraL.setNombre(nuevoNombre);
-                nombrePizarraLabel.setText(pizarraL.getNombre());
-                pizarraL.clickBoton2();
-                pizarraPanel.repaint();
+                cambiarColor((String) colorComboBox.getSelectedItem());
             }
         });
 
-
-
-        botonBorrarTodo.addActionListener(new ActionListener() {
+        modeComboBox = new JComboBox<>(new String[]{"Linea", "Rectangulo", "Entidad", "Flecha"});
+        modeComboBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                pizarraL.clickBoton5();
-                pizarraPanel.repaint();
+                cambiarModo((String) modeComboBox.getSelectedItem());
             }
         });
 
+        arrowComboBox = new JComboBox<>(new String[]{"Ninguna", "Triangulo", "Diamante"});
+        arrowComboBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cambiarTipoFlecha((String) arrowComboBox.getSelectedItem());
+            }
+        });
 
-        botonesPanel.add(guardarButton);
-        botonesPanel.add(cargarButton);
-        botonesPanel.add(botonBorrarTodo);
-        add(botonesPanel, BorderLayout.SOUTH);
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(agregarTabButton);
+        buttonPanel.add(cerrarTabButton);
+        buttonPanel.add(guardarButton);
+        buttonPanel.add(colorComboBox);
+        buttonPanel.add(modeComboBox);
+        buttonPanel.add(arrowComboBox);
 
-
-        add(clasesPanel, BorderLayout.WEST);
-
-
-
-
+        add(tabbedPane, BorderLayout.CENTER);
+        add(buttonPanel, BorderLayout.SOUTH);
     }
+
+    private void agregarPizarra() {
+        PizarraPanel nuevaPizarra = new PizarraPanel();
+        pizarras.add(nuevaPizarra);
+        tabbedPane.addTab("Pizarra " + pizarras.size(), nuevaPizarra);
+        tabbedPane.setSelectedComponent(nuevaPizarra);
+    }
+
+    private void cerrarPizarra() {
+        int selectedIndex = tabbedPane.getSelectedIndex();
+        if (selectedIndex != -1) {
+            tabbedPane.remove(selectedIndex);
+            pizarras.remove(selectedIndex);
+        }
+    }
+
+    private void guardarPizarra() {
+        JFileChooser fileChooser = new JFileChooser();
+        int result = fileChooser.showSaveDialog(this);
+
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File file = fileChooser.getSelectedFile();
+            try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
+                List<PizarraPanel> pizarrasAGuardar = new ArrayList<>(pizarras);
+                oos.writeObject(pizarrasAGuardar);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void cambiarColor(String color) {
+        Color nuevoColor;
+        switch (color) {
+            case "Rojo":
+                nuevoColor = Color.RED;
+                break;
+            case "Azul":
+                nuevoColor = Color.BLUE;
+                break;
+            case "Verde":
+                nuevoColor = Color.GREEN;
+                break;
+            default:
+                nuevoColor = Color.BLACK;
+                break;
+        }
+
+        PizarraPanel pizarraActual = obtenerPizarraActual();
+//        if (pizarraActual != null) {
+//            pizarraActual.setColorLinea(nuevoColor);
+//        }
+        assert pizarraActual != null;
+        pizarraActual.setColorFigura(nuevoColor);
+        pizarraActual.repaint();
+    }
+
+    private void cambiarModo(String modo) {
+        PizarraPanel pizarraActual = obtenerPizarraActual();
+        if (pizarraActual != null) {
+            switch (modo) {
+                case "Linea":
+                    pizarraActual.setMode(PizarraPanel.Mode.LINE);
+                    break;
+                case "Rectangulo":
+                    pizarraActual.setMode(PizarraPanel.Mode.RECTANGLE);
+                    break;
+                case "Entidad":
+                    pizarraActual.setMode(PizarraPanel.Mode.ENTITY);
+                    break;
+                case "Flecha":
+                    pizarraActual.setMode(PizarraPanel.Mode.ARROW);
+                    break;
+            }
+        }
+    }
+
+    private void cambiarTipoFlecha(String tipoFlecha) {
+        PizarraPanel pizarraActual = obtenerPizarraActual();
+        if (pizarraActual != null && pizarraActual.getMode() == PizarraPanel.Mode.ARROW) {
+            switch (tipoFlecha) {
+                case "Ninguna":
+                    pizarraActual.setArrowType(PizarraPanel.ArrowType.NONE);
+                    break;
+                case "Triangulo":
+                    pizarraActual.setArrowType(PizarraPanel.ArrowType.TRIANGLE);
+                    break;
+                case "Diamante":
+                    pizarraActual.setArrowType(PizarraPanel.ArrowType.DIAMOND);
+                    break;
+            }
+        }
+    }
+
+    private PizarraPanel obtenerPizarraActual() {
+        int selectedIndex = tabbedPane.getSelectedIndex();
+        if (selectedIndex != -1) {
+            return pizarras.get(selectedIndex);
+        }
+        return null;
+    }
+
 }
