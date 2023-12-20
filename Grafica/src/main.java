@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import javax.swing.*;
 
-public class main {
+public class main{
     private JLabel lb;
     private JPanel pizarra;
     private JTabbedPane tabbedPane;
