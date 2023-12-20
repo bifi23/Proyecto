@@ -3,6 +3,7 @@ import Decorator.*;
 import Command.*;
 import java.io.Serializable;
 import java.util.ArrayList;
+import clasesdecorator.*;
 
 public class Pizarra implements Serializable {
     private Command boton1, boton2, boton3, boton4, boton5, boton6;

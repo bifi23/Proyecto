@@ -2,7 +2,7 @@ package Pizarra;
 
 
 
-
+import clasesdecorator.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 
