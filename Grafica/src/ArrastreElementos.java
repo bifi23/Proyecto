@@ -61,11 +61,5 @@ public class ArrastreElementos extends JFrame {
         setLocationRelativeTo(null);
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            ArrastreElementos ventana = new ArrastreElementos();
-            ventana.setVisible(true);
 
-        });
-    }
 }

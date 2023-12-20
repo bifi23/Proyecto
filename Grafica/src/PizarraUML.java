@@ -2,30 +2,62 @@
 
 
 import javax.swing.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.List;
+
 import Decorator.Flecha;
 import Pizarra.Pizarra;
 import Command.*;
 import clasesdecorator.*;
 
 public class PizarraUML extends JPanel {
+    private List<PizarraPanel> pizarras;
+
     private Pizarra pizarraL;
     private PizarraPanel pizarraPanel;
     private JComboBox<Flecha> tipoFlechaComboBox;
     private JLabel nombrePizarraLabel;
     private boolean primeraVez = true;
     private int numeroClases;
+    private JButton guardarButton;
+
+
 
     public PizarraUML() {
         pizarraL = new Pizarra(new ArrayList<>(), new ArrayList<>());
         CommandConfiguracion.CommandConfiguracion(pizarraL);
         ComponentesInicial();
-    }
+        guardarButton = new JButton("Guardar");
+        guardarButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                guardarPizarra();
+            }
+        });
 
+    }
+    private void guardarPizarra() {
+        JFileChooser fileChooser = new JFileChooser();
+        int result = fileChooser.showSaveDialog(this);
+
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File file = fileChooser.getSelectedFile();
+            try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
+                List<PizarraPanel> pizarrasAGuardar = new ArrayList<>(pizarras);
+                oos.writeObject(pizarrasAGuardar);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
     private void ComponentesInicial() {
         setLayout(new BorderLayout());
 
@@ -39,7 +71,6 @@ public class PizarraUML extends JPanel {
         JPanel clasesPanel = new JPanel();
         clasesPanel.setLayout(new BoxLayout(clasesPanel, BoxLayout.Y_AXIS));
 
-        JButton guardarButton = new JButton("Guardar Pizarra");
         JButton cargarButton = new JButton("Cargar Pizarra");
         JButton botonBorrarTodo = new JButton("Borrar todo");
         JButton anadirClaseC = new JButton("Crear clase Completa");
@@ -47,25 +78,12 @@ public class PizarraUML extends JPanel {
         JButton anadirClaseM = new JButton("Crear clase con titulo y metodos");
 
 
+
         /**
          * Guarda la pizarra con cierto nombre
          */
-        guardarButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (primeraVez) {
-                    String nuevoNombre = JOptionPane.showInputDialog("Ingrese el nuevo nombre de la pizarra:");
 
-                    if (nuevoNombre != null && !nuevoNombre.isEmpty()) {
-                        pizarraL.setNombre(nuevoNombre);
-                        primeraVez = false;
-                    }
-                }
-                nombrePizarraLabel.setText(pizarraL.getNombre());
-                pizarraL.clickBoton1();
-                pizarraPanel.repaint();
-            }
-        });
+
         /**
          * Utiliza el boton 2 para cargar la pizarra con cierto nombre
          */
@@ -124,7 +142,6 @@ public class PizarraUML extends JPanel {
         });
 
 
-        botonesPanel.add(guardarButton);
         botonesPanel.add(cargarButton);
         botonesPanel.add(botonBorrarTodo);
         add(botonesPanel, BorderLayout.SOUTH);
